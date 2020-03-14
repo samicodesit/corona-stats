@@ -18,12 +18,15 @@
 </template>
 
 <script>
+import cities from "cities.json";
+
 export default {
   name: "SurveyForm",
   data: () => ({
     input: {
       age: null,
-      gender: null
+      gender: null,
+      city: ""
     },
 
     navigatorGeo: {
@@ -31,7 +34,7 @@ export default {
       lng: null
     },
 
-    cities: []
+    cities
   }),
   async mounted() {
     // const { latitude: lat, longitude: lng } =
@@ -92,6 +95,9 @@ export default {
   computed: {
     navigatorGeoDataExists() {
       return this.navigatorGeo.lat && this.navigatorGeo.lng;
+    },
+    renderedCities() {
+      return cities.filter(city => city.name.includes(this.input.city));
     }
   }
 };
