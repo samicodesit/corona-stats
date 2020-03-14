@@ -19,3 +19,15 @@ export default {
   })
 };
 </script>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+</style>
