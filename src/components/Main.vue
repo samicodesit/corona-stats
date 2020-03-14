@@ -42,15 +42,15 @@
             <v-container fluid>
               <v-row align="center">
                 <v-col class="d-flex" cols="12" sm="12">
-                  <v-select :items="items" label="Age" outlined></v-select>
+                  <v-select :items="items" label="Age" solo outlined></v-select>
                 </v-col>
 
                 <v-col class="d-flex" cols="12" sm="12">
-                  <v-select :items="items" outlined label="Gender"></v-select>
+                  <v-select :items="items" solo outlined label="Gender"></v-select>
                 </v-col>
 
                 <v-col class="d-flex" cols="12" sm="12">
-                  <v-select :items="items" label="Country" outlined></v-select>
+                  <v-select :items="items" label="Country" solo outlined></v-select>
                 </v-col>
 
                 <v-col class="d-flex" cols="12" sm="12">
