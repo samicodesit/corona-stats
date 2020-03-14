@@ -113,7 +113,6 @@ export default {
   color: #b3e5fc;
 }
 .secondSection {
-  height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: center;
