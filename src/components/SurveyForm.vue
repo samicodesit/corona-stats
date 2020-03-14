@@ -2,31 +2,29 @@
   <section>
     <h2>Take part in the survey</h2>
     <form class="form">
-      <v-text-field
+      <v-select
         type="text"
+        :items="ageArray"
         placeholder="your age"
         v-model.number="input.age"
       />
-      <select v-model="input.gender">
-        <option value="null" disabled>Gender</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
+      <v-select
+        v-model="input.gender"
+        placeholder="gender"
+        :items="genderArray"
+      />
     </form>
   </section>
 </template>
 
 <script>
-import cities from "cities.json";
-
 export default {
   name: "SurveyForm",
   data: () => ({
     input: {
       age: null,
       gender: null,
-      city: ""
+      status: null
     },
 
     navigatorGeo: {
@@ -34,7 +32,8 @@ export default {
       lng: null
     },
 
-    cities
+    ageArray: [...Array(100).keys()].map(x => x + 15),
+    genderArray: ["male", "female", "other"]
   }),
   async mounted() {
     // const { latitude: lat, longitude: lng } =
@@ -95,9 +94,6 @@ export default {
   computed: {
     navigatorGeoDataExists() {
       return this.navigatorGeo.lat && this.navigatorGeo.lng;
-    },
-    renderedCities() {
-      return cities.filter(city => city.name.includes(this.input.city));
     }
   }
 };
