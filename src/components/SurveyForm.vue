@@ -1,7 +1,8 @@
 <template>
   <section>
     <h2>Take part in the survey</h2>
-    <form class="form">
+    <p>{{ revserseGeoData.state }}</p>
+    <v-form class="form" ref="form" @submit.prevent="submitForm">
       <v-select
         type="text"
         :items="ageArray"
@@ -13,11 +14,18 @@
         placeholder="gender"
         :items="genderArray"
       />
-    </form>
+      <v-select
+        v-model="input.status"
+        placeholder="What's your current status?"
+        :items="statusArray"
+      />
+      <v-btn type="submit">Submit</v-btn>
+    </v-form>
   </section>
 </template>
 
 <script>
+import { db } from "@/firebase";
 export default {
   name: "SurveyForm",
   data: () => ({
@@ -27,20 +35,42 @@ export default {
       status: null
     },
 
-    navigatorGeo: {
+    navigatorGeoData: {
       lat: null,
       lng: null
     },
 
+    revserseGeoData: {
+      state: "",
+      country: ""
+    },
+
+    ip_address: "",
+
+    statusArray: [
+      "Tested Positive",
+      "Tested Negative",
+      "Recovered",
+      "Feeling sick. Getting tested soon",
+      "Feeling sick. No access to testing"
+    ],
     ageArray: [...Array(100).keys()].map(x => x + 15),
     genderArray: ["male", "female", "other"]
   }),
   async mounted() {
-    // const { latitude: lat, longitude: lng } =
-    //   (await this.getGeoPosition()) || {};
-    // if (lat && lng) {
-    //   this.reverseGeo([lat, lng]);
-    // }
+    this.ip_address = (await this.getIpAddress()) || "";
+    const { latitude: lat, longitude: lng } =
+      (await this.getGeoPosition()) || {};
+
+    if (lat && lng) {
+      console.log(lat, "setting nav geo?");
+      this.setNavigatorGeoData([lat, lng]);
+      const { state, country } = await this.reverseGeo([lat, lng]);
+
+      if (state && country) {
+        this.setReverseGeoData({ state, country });
+      }
+    }
   },
   methods: {
     initGeoLocator() {
@@ -75,20 +105,53 @@ export default {
       const jsonRes = await res.json();
 
       const { results } = jsonRes;
-      const state =
+      const locationAvailable =
         results &&
         results[0] &&
         results[0].locations &&
         results[0].locations[0] &&
-        results[0].locations[0].adminArea3;
+        results[0].locations[0];
 
-      return state;
+      const state = locationAvailable && locationAvailable.adminArea3;
+      const country = locationAvailable && locationAvailable.adminArea1;
+
+      return { state, country };
     },
     setNavigatorGeoData(coords) {
       const [lat, lng] = coords;
 
-      this.navigatorGeo.lat = lat;
-      this.navigatorGeo.lng = lng;
+      this.navigatorGeoData.lat = lat;
+      this.navigatorGeoData.lng = lng;
+    },
+    setReverseGeoData(data) {
+      const { state, country } = data;
+
+      this.revserseGeoData.state = state;
+      this.revserseGeoData.country = country;
+    },
+    async getIpAddress() {
+      const url = `https://www.cloudflare.com/cdn-cgi/trace`;
+      const res = await fetch(url);
+      const textRes = await res.text();
+      const ip = textRes
+        .slice(textRes.indexOf("ip="))
+        .split("\n")[0]
+        .split("=")[1];
+
+      return ip;
+    },
+    submitForm() {
+      // Add a new document with a generated id.
+      db.collection("cases")
+        .add({
+          ...this.input
+        })
+        .then(function(docRef) {
+          console.log("Document written with ID: ", docRef.id);
+        })
+        .catch(function(error) {
+          console.error("Error adding document: ", error);
+        });
     }
   },
   computed: {
