@@ -2,21 +2,22 @@
   <section>
     <h2>Take part in the survey</h2>
     <form class="form">
-      <input type="text" placeholder="your age" v-model.number="input.age" />
+      <v-text-field
+        type="text"
+        placeholder="your age"
+        v-model.number="input.age"
+      />
       <select v-model="input.gender">
         <option value="null" disabled>Gender</option>
         <option value="male">Male</option>
         <option value="female">Female</option>
         <option value="other">Other</option>
       </select>
-      <input type="text" placeholder="your age" v-model.number="input.age" />
     </form>
   </section>
 </template>
 
 <script>
-import cities from "all-the-cities";
-
 export default {
   name: "SurveyForm",
   data: () => ({
@@ -30,16 +31,14 @@ export default {
       lng: null
     },
 
-    cities
+    cities: []
   }),
   async mounted() {
-    console.log(cities);
-    const { latitude: lat, longitude: lng } =
-      (await this.getGeoPosition()) || {};
-
-    if (lat && lng) {
-      this.reverseGeo([lat, lng]);
-    }
+    // const { latitude: lat, longitude: lng } =
+    //   (await this.getGeoPosition()) || {};
+    // if (lat && lng) {
+    //   this.reverseGeo([lat, lng]);
+    // }
   },
   methods: {
     initGeoLocator() {
